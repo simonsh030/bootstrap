@@ -28,10 +28,10 @@ public class AdminController {
     }
 
     @GetMapping()
-    public String userList(Model model) {
+    public String getAllUsers(Model model) {
         User user = (User) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
-        model.addAttribute("allUsers", userService.listUsers());
+        model.addAttribute("allUsers", userService.getAllUsers());
         model.addAttribute("userMain", user);
         model.addAttribute("roles", roleService.getAllRoles());
         return "admin";
@@ -39,20 +39,20 @@ public class AdminController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public String deleteUser(@PathVariable("id") long id) {
-        userService.delete(id);
+    public String deleteUserById(@PathVariable("id") long id) {
+        userService.deleteUserById(id);
         return "redirect:/admin";
     }
 
     @PostMapping("/edit")
-    public String update(@ModelAttribute("user") User user, @RequestParam("listRoles") ArrayList<Long> roles) {
-        userService.change(user, roleService.findRoles(roles));
+    public String updateUser(@ModelAttribute("user") User user, @RequestParam("listRoles") ArrayList<Long> roles) {
+        userService.updateUser(user, roleService.findRoles(roles));
         return "redirect:/admin";
     }
 
     @PostMapping("/new")
     public String addUser(User user, @RequestParam("listRoles") ArrayList<Long> roles) {
-        userService.add(user, roleService.findRoles(roles));
+        userService.addUser(user, roleService.findRoles(roles));
         return "redirect:/admin";
     }
 }
