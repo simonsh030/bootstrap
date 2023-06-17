@@ -28,28 +28,28 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Transactional
     @Override
-    public void add(User user, Set<Role> roles) {
+    public void addUser(User user, Set<Role> roles) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        userDao.add(user, roles);
+        userDao.addUser(user, roles);
     }
 
     @Transactional
     @Override
-    public void delete(long id) {
-        userDao.delete(id);
+    public void deleteUserById(long id) {
+        userDao.deleteUserById(id);
     }
 
     @Transactional
     @Override
-    public User change(User user, Set < Role > roles) {
+    public User updateUser(User user, Set < Role > roles) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userDao.change(user, roles);
+        return userDao.updateUser(user, roles);
     }
 
     @Override
-    public List < User > listUsers() {
-        return userDao.listUsers();
+    public List < User > getAllUsers() {
+        return userDao.getAllUsers();
     }
 
     @Override
