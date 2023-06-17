@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Set;
 
 public interface UserDao {
-    void add(User user, Set<Role> roles);
+    void addUser(User user, Set<Role> roles);
 
-    void delete(long id);
+    void deleteUserById(long id);
 
-    User change(User user, Set<Role> roles);
+    User updateUser(User user, Set<Role> roles);
 
-    List<User> listUsers();
+    List<User> getAllUsers();
 
     User findUserById(long id);
 
