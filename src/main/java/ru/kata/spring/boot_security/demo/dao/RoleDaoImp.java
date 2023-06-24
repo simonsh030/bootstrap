@@ -25,7 +25,35 @@ public class RoleDaoImp implements RoleDao {
     }
 
     public List<Role> getAllRoles() {
-        return entityManager.createQuery("SELECT r FROM Role r", Role.class).getResultList();
+        return entityManager.createQuery("select r from Role r").getResultList();
     }
 
+    public void addDefaultRoles() {
+        List<Long> roleIds = List.of(1L, 2L);
+
+        Set<Role> existingRoles = findRoles(roleIds);
+        boolean hasUserRole = false;
+        boolean hasAdminRole = false;
+
+        for (Role role : existingRoles) {
+            if (role.getName().equals("ROLE_USER")) {
+                hasUserRole = true;
+            }
+            if (role.getName().equals("ROLE_ADMIN")) {
+                hasAdminRole = true;
+            }
+        }
+
+        if (!hasUserRole) {
+            Role roleUser = new Role();
+            roleUser.setName("ROLE_USER");
+            entityManager.persist(roleUser);
+        }
+
+        if (!hasAdminRole) {
+            Role roleAdmin = new Role();
+            roleAdmin.setName("ROLE_ADMIN");
+            entityManager.persist(roleAdmin);
+        }
+    }
 }

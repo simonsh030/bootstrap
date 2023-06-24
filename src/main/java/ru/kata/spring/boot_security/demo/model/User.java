@@ -15,6 +15,8 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true)
     private String name;
     private String last_name;
     private String email;
@@ -39,6 +41,7 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
     }
+
     public User(Long id, String name, String last_name, String email, String password, Set<Role> roles) {
         this.id = id;
         this.name = name;

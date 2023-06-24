@@ -1,7 +1,9 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
@@ -17,16 +19,20 @@ import java.util.ArrayList;
 public class AdminController {
 
     private final UserService userService;
+
     private final RoleService roleService;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AdminController(UserService userService, RoleService roleService, PasswordEncoder passwordEncoder) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        String errorMessage = "Ошибка: Дублирующееся значение.";
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
     @GetMapping()
     public String getAllUsers(Model model) {
         User user = (User) SecurityContextHolder.getContext()
@@ -44,15 +50,31 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @PostMapping("/edit")
-    public String updateUser(@ModelAttribute("user") User user, @RequestParam("listRoles") ArrayList<Long> roles) {
-        userService.updateUser(user, roleService.findRoles(roles));
+    @GetMapping("/edit/{id}")
+    public String showEditUserForm(Model model, @PathVariable("id") long id) {
+        model.addAttribute("user", userService.findUserById(id));
+        model.addAttribute("listRoles", roleService.getAllRoles());
+        return "redirect:/admin";
+    }
+
+    @PatchMapping("/{id}")
+    public String updateUser(@ModelAttribute("user") User user, @RequestParam("listRoles") ArrayList<Long> roles, Model model) {
+            userService.updateUser(user, roleService.findRoles(roles));
+
+        return "redirect:/admin";
+    }
+
+
+    @GetMapping("/new")
+    public String showNewUserForm(Model model) {
+        model.addAttribute("user", new User());
+        model.addAttribute("listRoles", roleService.getAllRoles());
         return "redirect:/admin";
     }
 
     @PostMapping("/new")
-    public String addUser(User user, @RequestParam("listRoles") ArrayList<Long> roles) {
-        userService.addUser(user, roleService.findRoles(roles));
+    public String addUser(@ModelAttribute("user") User user, @RequestParam("listRoles") ArrayList<Long> roles, Model model) {
+            userService.addUser(user, roleService.findRoles(roles));
         return "redirect:/admin";
     }
 }
