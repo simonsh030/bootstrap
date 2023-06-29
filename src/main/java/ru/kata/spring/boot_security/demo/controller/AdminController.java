@@ -50,31 +50,14 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/edit/{id}")
-    public String showEditUserForm(Model model, @PathVariable("id") long id) {
-        model.addAttribute("user", userService.findUserById(id));
-        model.addAttribute("listRoles", roleService.getAllRoles());
+    @PostMapping("/edit")
+    public String updateUser(@ModelAttribute("user") User user, @RequestParam("listRoles") ArrayList<Long> roles) {
+        userService.updateUser(user, roleService.findRoles(roles));
         return "redirect:/admin";
     }
-
-    @PatchMapping("/{id}")
-    public String updateUser(@ModelAttribute("user") User user, @RequestParam("listRoles") ArrayList<Long> roles, Model model) {
-            userService.updateUser(user, roleService.findRoles(roles));
-
-        return "redirect:/admin";
-    }
-
-
-    @GetMapping("/new")
-    public String showNewUserForm(Model model) {
-        model.addAttribute("user", new User());
-        model.addAttribute("listRoles", roleService.getAllRoles());
-        return "redirect:/admin";
-    }
-
     @PostMapping("/new")
-    public String addUser(@ModelAttribute("user") User user, @RequestParam("listRoles") ArrayList<Long> roles, Model model) {
-            userService.addUser(user, roleService.findRoles(roles));
+    public String addUser(User user, @RequestParam("listRoles") ArrayList<Long> roles) {
+        userService.addUser(user, roleService.findRoles(roles));
         return "redirect:/admin";
     }
 }
